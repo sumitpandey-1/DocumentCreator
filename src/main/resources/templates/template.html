@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Education Certificate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f8f8f8;
+        }
+        .certificate {
+            width: 80%;
+            margin: auto;
+            padding: 50px;
+            border: 15px solid gold;
+            background: white;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .logo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 100px;
+        }
+        h1 {
+            font-size: 45px;
+            color: darkblue;
+            margin-bottom: 20px;
+        }
+        .details {
+            font-size: 20px;
+            margin: 10px 0;
+        }
+        .signature {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+        }
+        .signature div {
+            width: 30%;
+            border-top: 2px solid black;
+            padding-top: 10px;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 16px;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <div class="certificate">
+        <img src="https://www.haptik.ai/hs-fs/hubfs/cars24_au_logo.webp?width=2142&height=916&name=cars24_au_logo.webp" alt="Institution Logo" class="logo">
+        <h1>Certificate of Achievement</h1>
+        <p class="details">This certifies that</p>
+        <h2>((recipient_name))</h2>
+        <p class="details">has successfully completed the course</p>
+        <h3>((course_name))</h3>
+        <p class="details">with a grade of <strong>((grade))</strong></p>
+        <p class="details">under the program <strong>((program_name))</strong></p>
+        <p class="details">from <strong>((institution_name))</strong></p>
+        <p class="details">held at <strong>((location))</strong></p>
+        <p class="details">on <strong>((date))</strong></p>
+        <p class="details">Duration: <strong>((duration))</strong></p>
+        <p class="details">Certificate ID: <strong>((certificate_id))</strong></p>
+        <p class="details">Issued by: <strong>((issuer_name))</strong></p>
+        <div class="signature">
+            <div>((instructor_name))<br>Instructor</div>
+            <div>((dean_name))<br>Dean</div>
+            <div>((director_name))<br>Director</div>
+        </div>
+        <p class="footer">This certificate is awarded by <strong>((institution_name))</strong> and is valid for official purposes.</p>
+    </div>
+</body>
+</html>

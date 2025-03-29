@@ -1,18 +1,19 @@
 package cars24.DocumentCreator.service;
 
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.LoadState;
+import com.microsoft.playwright.options.ScreenshotScale;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
-public class HTMLToPDFConverter implements HTMLConverter {
+public class HTMLToImageConverter implements HTMLConverter{
 
     @Override
-    public void process(String htmlContent , String format ){
+    public void process(String htmlContent, String format) {
         try (Playwright playwright = Playwright.create()) {
             Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
                     .setHeadless(true)
@@ -23,14 +24,21 @@ public class HTMLToPDFConverter implements HTMLConverter {
                             "--disable-extensions",
                             "--disable-dev-shm-usage"
                     )));
-            String defaultFormat = "A4";
-            BrowserContext context = browser.newContext();
+
+            BrowserContext context = browser.newContext(new Browser.NewContextOptions()
+                    .setDeviceScaleFactor(2));
             Page page = context.newPage();
+            page.setViewportSize(1920, 1080);
             page.setContent(htmlContent);
-            page.pdf(new Page.PdfOptions()
-                    .setPath(Paths.get("/Users/a38648/Desktop/CARS24/DocumentCreator/src/main/resources/templates/output.pdf"))
-                    .setFormat((Objects.isNull(format) || format.isEmpty()) ? defaultFormat : format)
-                    .setPrintBackground(true));
+            page.waitForLoadState(LoadState.NETWORKIDLE);
+            String defaultImagePath = "/Users/a38648/Desktop/CARS24/DocumentCreator/src/main/resources/templates/output.png";
+
+            page.screenshot(new Page.ScreenshotOptions()
+                    .setPath(Paths.get(defaultImagePath))
+                    .setFullPage(true)
+                    .setScale(ScreenshotScale.valueOf("css"))); // Ensures full CSS resolution
+
+
             browser.close();
         }
     }

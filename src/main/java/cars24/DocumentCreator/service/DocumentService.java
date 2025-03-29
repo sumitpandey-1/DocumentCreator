@@ -1,9 +1,12 @@
 package cars24.DocumentCreator.service;
 
+import cars24.DocumentCreator.config.ISpringFactory;
 import cars24.DocumentCreator.model.Template;
 import cars24.DocumentCreator.repository.TemplateRepository;
 import cars24.DocumentCreator.service.validator.GenericValidation;
 import cars24.DocumentCreator.service.validator.JsonValidator;
+import cars24.DocumentCreator.utility.Constants;
+import cars24.DocumentCreator.utility.Constants.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,9 @@ public class DocumentService implements GenericService{
     @Autowired
     GenericValidation genericValidation;
 
+    @Autowired
+    ISpringFactory iSpringFactory;
+
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -48,8 +54,13 @@ public class DocumentService implements GenericService{
             }
             String processedHtml =
                     htmlParserService.replacePlaceholders(data,template);
-            htmlToPDFConverter.process(processedHtml,(String) userRequest.get("format"));
-            return "PDF Path returned";
+            String defaultDocType = "pdf";
+            if (userRequest.containsKey(INPUT_FIELDS.DOC_TYPE)){
+                defaultDocType = (String) userRequest.get(INPUT_FIELDS.DOC_TYPE);
+            }
+            HTMLConverter converter = getConverter(defaultDocType);
+            converter.process(processedHtml,(String) userRequest.get("format"));
+            return "Doc Path returned";
         } catch (JsonProcessingException e) {
             System.err.println("Error processing JSON: " + e.getMessage());
             return "PDF Creation Failed: JSON Processing Error";
@@ -57,5 +68,14 @@ public class DocumentService implements GenericService{
             System.err.println("Unexpected error: " + e.getMessage());
             return "PDF Creation Failed: " + e.getMessage();
         }
+    }
+    private HTMLConverter getConverter(String requestType) {
+       if (DOCUMENT_TYPE.IMAGE.contains(requestType.toLowerCase())){
+           return iSpringFactory.getBean(HTMLToImageConverter.class);
+       }
+       if (DOCUMENT_TYPE.PDF.contains(requestType.toLowerCase())){
+           return iSpringFactory.getBean(HTMLToPDFConverter.class);
+       }
+       return null;
     }
 }

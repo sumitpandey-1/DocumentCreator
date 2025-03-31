@@ -43,6 +43,7 @@ public interface Constants {
     interface INPUT_FIELDS{
         String REQUEST_TYPE = "requestType";
         String TEMPLATE_ID = "templateId";
+        String DOC_TYPE = "docType";
     }
 
     interface REQUEST_TYPE{
@@ -53,6 +54,10 @@ public interface Constants {
     interface TEMPLATE_FIELDS{
         String HTML_TEMPLATE = "htmlTemplate";
         String JSON_VALIDATOR = "jsonValidator";
+    }
+    interface DOCUMENT_TYPE{
+        List<String> IMAGE = List.of("image","png");
+        List<String> PDF = List.of("pdf");
     }
 
 }

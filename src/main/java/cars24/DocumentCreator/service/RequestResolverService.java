@@ -19,14 +19,11 @@ public class RequestResolverService {
 
     public Object process(String request) throws Exception {
         Map userRequest = objectMapper.readValue(request,Map.class);
-
         String requestType = (String) userRequest.get(INPUT_FIELDS.REQUEST_TYPE);
         GenericService processor = getProcessor(requestType);
-
         if (Objects.isNull(processor)){
             throw new Exception("Invalid Request Type!!");
         }
-
         return processor.process(request);
     }
 

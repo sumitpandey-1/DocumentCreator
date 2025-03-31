@@ -58,7 +58,6 @@ public class JsonValidator {
 
     public boolean validateJsonDocument(String definition, String payload){
         try {
-
             JSONObject rawSchema = new JSONObject(new JSONTokener(definition));
             Schema schema = SchemaLoader.load(rawSchema);
             JSONObject json = new JSONObject(new JSONTokener(payload));

@@ -13,24 +13,24 @@ import software.amazon.awssdk.services.s3.S3Client;
 @Slf4j
 public class AWSConfig {
 
-    @Value("${aws.region}")
-    private String region;
+//    @Value("${aws.region}")
+//    private String region;
+//
+//    @Value("${aws.access.key.id}")
+//    private String accessKeyId;
+//
+//    @Value("${aws.secret.access.key}")
+//    private String secretAccessKey;
 
-    @Value("${aws.access.key.id}")
-    private String accessKeyId;
-
-    @Value("${aws.secret.access.key}")
-    private String secretAccessKey;
-
-    @Bean
-    public S3Client s3Client() {
-        AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(
-                accessKeyId.trim(),      // added trim() to remove any accidental spaces
-                secretAccessKey.trim()
-        );
-        return S3Client.builder()
-                .region(Region.AP_SOUTH_1)  // make sure this matches your bucket's region
-                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
-                .build();
-    }
+//    @Bean
+//    public S3Client s3Client() {
+//        AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(
+//                accessKeyId.trim(),      // added trim() to remove any accidental spaces
+//                secretAccessKey.trim()
+//        );
+//        return S3Client.builder()
+//                .region(Region.AP_SOUTH_1)  // make sure this matches your bucket's region
+//                .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
+//                .build();
+//    }
 }

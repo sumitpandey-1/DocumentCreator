@@ -60,7 +60,6 @@ public class HTMLParserService {
         Document doc = Jsoup.parse(htmlContent);
         List<Table> tables = new ArrayList<>();
 
-        // Find all tables with an id attribute
         Elements tableElements = doc.select("table[id]");
 
         for (Element tableElement : tableElements) {
@@ -75,42 +74,39 @@ public class HTMLParserService {
             }
             for (int i = 0; i < headerCells.size(); i++) {
                 Element cell = headerCells.get(i);
-
                 Column column = new Column();
                 String columnId = cell.hasAttr("id") ? cell.attr("id") :
                         generateColumnId(i, cell.text());
-
                 column.setColumnId(columnId);
                 column.setField(columnId);
                 column.setHeaderText(cell.text());
-
                 columns.add(column);
             }
-
             tableMapping.setColumnsList(columns);
             tables.add(tableMapping);
         }
         return tables;
     }
 
-    /**
+    /*
      * Generates a column ID from header text if id doesn't exist
+     * Logic : Remove the spaces between the Column Text and Convert it in camelCase
+     * Column : Product Name
+     * ColumnId : productName
      */
     private String generateColumnId(int position, String headerText) {
         if (headerText != null && !headerText.trim().isEmpty()) {
             String cleaned = headerText.trim().replaceAll("[^a-zA-Z0-9\\s]", "");
             String[] parts = cleaned.split("\\s+");
             StringBuilder result = new StringBuilder(parts[0].toLowerCase());
-
             for (int i = 1; i < parts.length; i++) {
-                if (parts[i].length() > 0) {
+                if (!parts[i].isEmpty()) {
                     result.append(Character.toUpperCase(parts[i].charAt(0)));
                     if (parts[i].length() > 1) {
                         result.append(parts[i].substring(1).toLowerCase());
                     }
                 }
             }
-
             return result.toString();
         } else {
             return "column" + position;

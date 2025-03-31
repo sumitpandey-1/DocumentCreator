@@ -63,10 +63,9 @@ public class DocumentService implements GenericService{
             return "Doc Path returned";
         } catch (JsonProcessingException e) {
             System.err.println("Error processing JSON: " + e.getMessage());
-            return "PDF Creation Failed: JSON Processing Error";
+            return "Document Creation Failed: JSON Processing Error";
         } catch (Exception e) {
-            System.err.println("Unexpected error: " + e.getMessage());
-            return "PDF Creation Failed: " + e.getMessage();
+            return "Document Creation Failed: " + e.getMessage();
         }
     }
     private HTMLConverter getConverter(String requestType) {

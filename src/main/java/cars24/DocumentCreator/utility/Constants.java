@@ -49,11 +49,13 @@ public interface Constants {
     interface REQUEST_TYPE{
         String CREATE_DOCUMENT = "CreateDocument";
         String CREATE_TEMPLATE = "CreateTemplate";
+        String UPDATE_TEMPLATE = "UpdateTemplate";
         String GET_TEMPLATE_PAYLOAD = "GetTemplatePayload";
     }
     interface TEMPLATE_FIELDS{
         String HTML_TEMPLATE = "htmlTemplate";
         String JSON_VALIDATOR = "jsonValidator";
+        String TEMPLATE_NAME = "templateName";
     }
     interface DOCUMENT_TYPE{
         List<String> IMAGE = List.of("image","png");

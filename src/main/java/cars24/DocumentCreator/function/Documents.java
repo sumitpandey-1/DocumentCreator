@@ -51,10 +51,4 @@ public class Documents {
         };
 
     }
-//
-//    @Bean
-//    public Function<Integer, String> getTemplatePayload() {
-//        return (templateId) -> templateService.getTemplatePayload(templateId);
-//
-//    }
 }

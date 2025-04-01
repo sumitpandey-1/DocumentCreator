@@ -32,6 +32,7 @@ public class RequestResolverService {
             case REQUEST_TYPE.CREATE_DOCUMENT:
                 return iSpringFactory.getBean(DocumentService.class);
             case REQUEST_TYPE.GET_TEMPLATE_PAYLOAD:
+            case REQUEST_TYPE.UPDATE_TEMPLATE:
             case REQUEST_TYPE.CREATE_TEMPLATE:
                 return iSpringFactory.getBean(TemplateService.class);
             default:

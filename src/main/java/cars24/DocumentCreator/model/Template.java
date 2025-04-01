@@ -6,7 +6,7 @@ import lombok.Generated;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -21,8 +21,8 @@ public class Template {
     private Map<String,Object> expectedJsonFormat;
     private String htmlTemplate;
     private String tenantId;
-    private Date createdOn;
-    private Date updatedOn;
+    private LocalDateTime createdOn;
+    private LocalDateTime updatedOn;
     private String docFormat;
     private List<Table> tables;
 

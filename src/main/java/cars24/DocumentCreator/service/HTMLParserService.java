@@ -40,7 +40,7 @@ public class HTMLParserService {
         if (Objects.isNull(tables) || tables.isEmpty()) return template.getHtmlTemplate();
         Document doc = Jsoup.parse(template.getHtmlTemplate());
         for(Table table : tables){
-            List<Map<String,Object>> tableEntries = (List<Map<String, Object>>) data.get(table.getTableSource());
+            List<Map<String,Object>> tableEntries = (List<Map<String, Object>>) data.get(table.getTableId());
             if (Objects.isNull(tableEntries) || tableEntries.isEmpty()) continue;
             Element tableBody = doc.select("table#" + table.getTableId() + " tbody").first();
             if (tableBody != null) {
@@ -66,7 +66,6 @@ public class HTMLParserService {
             String tableId = tableElement.id();
             Table tableMapping = new Table();
             tableMapping.setTableId(tableId);
-            tableMapping.setTableSource(tableId);
             List<Column> columns = new ArrayList<>();
             Elements headerCells = tableElement.select("thead th");
             if (headerCells.isEmpty()) {

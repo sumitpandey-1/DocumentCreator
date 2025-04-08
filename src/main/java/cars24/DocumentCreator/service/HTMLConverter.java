@@ -1,5 +1,5 @@
 package cars24.DocumentCreator.service;
 
 public interface HTMLConverter {
-    void process(String htmlContent , String format );
+    byte[] process(String htmlContent , String format );
 }

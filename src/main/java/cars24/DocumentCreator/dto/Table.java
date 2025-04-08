@@ -7,6 +7,5 @@ import java.util.List;
 @Data
 public class Table {
     private String tableId;
-    private String tableSource;
     private List<Column> columnsList;
 }

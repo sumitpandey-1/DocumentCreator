@@ -1,5 +1,7 @@
 package cars24.DocumentCreator.service;
 
+import cars24.DocumentCreator.enums.DocFormat;
+import cars24.DocumentCreator.utility.Constants;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.LoadState;
 import com.microsoft.playwright.options.ScreenshotScale;
@@ -12,7 +14,7 @@ import java.util.List;
 public class HTMLToImageConverter implements HTMLConverter{
 
     @Override
-    public byte[] process(String htmlContent, String format) {
+    public byte[] process(String htmlContent, DocFormat format) {
         try (Playwright playwright = Playwright.create()) {
             Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
                     .setHeadless(true)
@@ -39,5 +41,10 @@ public class HTMLToImageConverter implements HTMLConverter{
             browser.close();
             return screenshotBytes;
         }
+    }
+
+    @Override
+    public boolean canConvert(String requestType) {
+        return Constants.DOCUMENT_TYPE.IMAGE.contains(requestType.toLowerCase());
     }
 }

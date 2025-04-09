@@ -1,6 +1,6 @@
 package cars24.DocumentCreator.service;
 
-import cars24.DocumentCreator.config.ISpringFactory;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +16,6 @@ import java.util.Objects;
 public class RequestResolverService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-
-    @Autowired
-    ISpringFactory iSpringFactory;
 
     private List<RequestProcessor> processors;
 

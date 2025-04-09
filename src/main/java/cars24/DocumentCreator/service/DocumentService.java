@@ -1,6 +1,7 @@
 package cars24.DocumentCreator.service;
 
-import cars24.DocumentCreator.config.ISpringFactory;
+
+import cars24.DocumentCreator.enums.DocFormat;
 import cars24.DocumentCreator.filesystem.S3Service;
 import cars24.DocumentCreator.model.Template;
 import cars24.DocumentCreator.repository.TemplateRepository;
@@ -38,8 +39,6 @@ public class DocumentService implements RequestProcessor {
 
     private final List<HTMLConverter> htmlConverters;
 
-    private ISpringFactory iSpringFactory;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -63,9 +62,9 @@ public class DocumentService implements RequestProcessor {
                 defaultDocType = (String) userRequest.get(INPUT_FIELDS.DOC_TYPE);
             }
             HTMLConverter converter = getConverter(defaultDocType);
-            String format = template.getDocFormat().getValue();
+            DocFormat format = template.getDocFormat();
             if(userRequest.containsKey(INPUT_FIELDS.FORMAT)){
-                format = (String) userRequest.get("format");
+                format = DocFormat.fromValue((String) userRequest.get(INPUT_FIELDS.FORMAT));
             }
             byte[] byteFile = converter.process(processedHtml,format);
 
@@ -99,12 +98,9 @@ public class DocumentService implements RequestProcessor {
     }
 
     private HTMLConverter getConverter(String requestType) {
-       if (DOCUMENT_TYPE.IMAGE.contains(requestType.toLowerCase())){
-           return iSpringFactory.getBean(HTMLToImageConverter.class);
-       }
-       if (DOCUMENT_TYPE.PDF.contains(requestType.toLowerCase())){
-           return iSpringFactory.getBean(HTMLToPDFConverter.class);
-       }
+      for (HTMLConverter converter : htmlConverters){
+          if (converter.canConvert(requestType))return converter;
+      }
        return null;
     }
 

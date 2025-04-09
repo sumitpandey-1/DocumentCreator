@@ -1,6 +1,6 @@
 package cars24.DocumentCreator.service;
 
-import cars24.DocumentCreator.config.ISpringFactory;
+
 import cars24.DocumentCreator.dto.Table;
 import cars24.DocumentCreator.enums.DocFormat;
 import cars24.DocumentCreator.model.Template;
@@ -9,6 +9,7 @@ import cars24.DocumentCreator.service.validator.UserValidation;
 import cars24.DocumentCreator.utility.Constants;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,18 +21,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class TemplateService implements RequestProcessor {
 
-    @Autowired
     private TemplateRepository templateRepository;
 
-    @Autowired
     private HTMLParserService htmlParserService;
 
-    @Autowired
-    private ISpringFactory iSpringFactory;
-
-    @Autowired
     private UserValidation userValidation;
 
     private final ObjectMapper objectMapper = new ObjectMapper();

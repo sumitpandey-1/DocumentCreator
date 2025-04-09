@@ -40,6 +40,8 @@ public interface Constants {
             "image",".png"
     );
     interface S3_FOLDER{
+        String S3_PARENT_FOLDER = "stage";
+        String S3_TEMPLATE_DOCUMENT_FOLDER = "template";
         String DOCUMENT = "document";
     }
 

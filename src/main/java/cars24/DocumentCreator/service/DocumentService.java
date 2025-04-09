@@ -94,7 +94,7 @@ public class DocumentService implements RequestProcessor {
                 Constants.DOC_TYPE_TO_FORMAT.get(docType.toLowerCase()),
                 byteFile
         );
-        URI path = s3Service.uploadFile(multipartFile, template.getDocumentS3BasePath() + "/" + stringBuilder.toString(),"template-lam-documents");
+        URI path = s3Service.uploadFile(multipartFile, createPrefixForDocPath() + "/" + template.getDocumentS3BasePath() + "/" + stringBuilder.toString(),"academy24-media");
         return path;
     }
 
@@ -106,5 +106,13 @@ public class DocumentService implements RequestProcessor {
            return iSpringFactory.getBean(HTMLToPDFConverter.class);
        }
        return null;
+    }
+
+    private String createPrefixForDocPath(){
+        return new StringBuilder(S3_FOLDER.S3_PARENT_FOLDER)
+                .append("/")
+                .append(S3_FOLDER.S3_TEMPLATE_DOCUMENT_FOLDER)
+                .append("/")
+                .toString();
     }
 }

@@ -19,28 +19,32 @@ public class AWSConfig {
     @Value("${aws.region}")
     private String region;
 
-    @Value("${aws.accessKey}")
-    private String accessKeyId;
-
-    @Value("${aws.secretKey}")
-    private String secretAccessKey;
-
-    @Value("${aws.s3.endpoint}")
-    private String endpoint;
+//    @Value("${aws.accessKey}")
+//    private String accessKeyId;
+//
+//    @Value("${aws.secretKey}")
+//    private String secretAccessKey;
+//
+//    @Value("${aws.s3.endpoint}")
+//    private String endpoint;
 
     @Bean
     public S3Client s3Client() {
+//        return S3Client.builder()
+//                .region(Region.of(region))
+//                .credentialsProvider(
+//                        StaticCredentialsProvider.create(
+//                                AwsBasicCredentials.create(accessKeyId, secretAccessKey)
+//                        )
+//                )
+//                .endpointOverride(URI.create(endpoint))
+//                .serviceConfiguration(S3Configuration.builder()
+//                        .pathStyleAccessEnabled(true)
+//                        .build())
+//                .build();
+
         return S3Client.builder()
                 .region(Region.of(region))
-                .credentialsProvider(
-                        StaticCredentialsProvider.create(
-                                AwsBasicCredentials.create(accessKeyId, secretAccessKey)
-                        )
-                )
-                .endpointOverride(URI.create(endpoint))
-                .serviceConfiguration(S3Configuration.builder()
-                        .pathStyleAccessEnabled(true)
-                        .build())
                 .build();
     }
 }

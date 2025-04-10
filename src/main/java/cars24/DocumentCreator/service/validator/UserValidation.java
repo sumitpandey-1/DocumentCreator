@@ -1,6 +1,8 @@
 package cars24.DocumentCreator.service.validator;
 
+import cars24.DocumentCreator.exceptions.CustomException;
 import cars24.DocumentCreator.utility.Constants;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.*;
 import java.util.*;
 
@@ -16,13 +18,13 @@ public class UserValidation {
         /*TODO : Write condition for this.
         * */
 
-        throw new Exception("Invalid User");
+        throw new CustomException(HttpStatus.UNAUTHORIZED,"Invalid User");
     }
 
     public void validateAdmin(Map userRequest) throws Exception {
         if(Objects.nonNull(userRequest.get(Constants.INPUT_FIELDS.USER)) && ((String)userRequest.get(Constants.INPUT_FIELDS.USER)).equals("Admin")){
             return;
         }
-        throw new Exception("Invalid User");
+        throw new CustomException(HttpStatus.UNAUTHORIZED,"Only admin can access this service.");
     }
 }

@@ -1,11 +1,14 @@
 package cars24.DocumentCreator.function;
 
+import cars24.DocumentCreator.exceptions.CustomException;
 import cars24.DocumentCreator.model.Template;
 import cars24.DocumentCreator.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Function;
@@ -44,7 +47,14 @@ public class Documents {
     public Function<String, Object> requestHa() {
         return (jsonString) -> {
             try {
-                return requestResolverService.process(jsonString);
+                Object response = requestResolverService.process(jsonString);
+                return ResponseEntity
+                        .status(HttpStatus.OK)
+                        .body(response);
+            } catch (CustomException e) {
+                return ResponseEntity
+                        .status(e.getStatus())
+                        .body(e.getMessage());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

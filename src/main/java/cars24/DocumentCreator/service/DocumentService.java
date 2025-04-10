@@ -2,6 +2,7 @@ package cars24.DocumentCreator.service;
 
 
 import cars24.DocumentCreator.enums.DocFormat;
+import cars24.DocumentCreator.exceptions.CustomException;
 import cars24.DocumentCreator.filesystem.S3Service;
 import cars24.DocumentCreator.model.Template;
 import cars24.DocumentCreator.repository.TemplateRepository;
@@ -12,6 +13,7 @@ import cars24.DocumentCreator.utility.Constants.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,6 +22,7 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -42,19 +45,17 @@ public class DocumentService implements RequestProcessor {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public Object  process(String request){
+    public Object process(String request) throws CustomException{
         try {
             Map userRequest = objectMapper.readValue(request,Map.class);
           //  genericValidation.validate(userRequest);
-            Optional<Template> optionalTemplate = templateRepository.findById((String)userRequest.get("templateId"));
-            if (optionalTemplate.isEmpty()) return "Template Not Found";
+            Optional<Template> optionalTemplate = templateRepository.findById((String)userRequest.get(INPUT_FIELDS.TEMPLATE_ID));
+            if (optionalTemplate.isEmpty()) {
+                throw new CustomException(HttpStatus.NO_CONTENT,"Template not found for templateId : ".concat((String)userRequest.get(INPUT_FIELDS.TEMPLATE_ID)));
+            }
             Template template = optionalTemplate.get();
             String data = objectMapper.writeValueAsString(userRequest.get("data"));
-            boolean isValidJson =
-                    jsonValidator.validateJsonDocument(objectMapper.writeValueAsString(template.getExpectedJsonFormat()),data);
-            if (!isValidJson){
-                return "JSON format doesnot match with the expected JSON";
-            }
+            jsonValidator.validateJsonDocument(objectMapper.writeValueAsString(template.getExpectedJsonFormat()),data);
             String processedHtml =
                     htmlParserService.replacePlaceholders(data,template);
             String defaultDocType = "pdf";
@@ -62,6 +63,9 @@ public class DocumentService implements RequestProcessor {
                 defaultDocType = (String) userRequest.get(INPUT_FIELDS.DOC_TYPE);
             }
             HTMLConverter converter = getConverter(defaultDocType);
+            if (Objects.isNull(converter)){
+                throw new CustomException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Invalid DocType. Only support Image and PDF.");
+            }
             DocFormat format = template.getDocFormat();
             if(userRequest.containsKey(INPUT_FIELDS.FORMAT)){
                 format = DocFormat.fromValue((String) userRequest.get(INPUT_FIELDS.FORMAT));
@@ -70,9 +74,7 @@ public class DocumentService implements RequestProcessor {
 
             return saveFileInS3(byteFile,template,defaultDocType);
         } catch (JsonProcessingException e) {
-            return "Document Creation Failed: JSON Processing Error";
-        } catch (Exception e) {
-            return "Document Creation Failed: " + e.getMessage();
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Unable to Map request.");
         }
     }
 

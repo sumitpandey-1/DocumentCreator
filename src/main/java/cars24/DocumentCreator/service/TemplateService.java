@@ -3,6 +3,7 @@ package cars24.DocumentCreator.service;
 
 import cars24.DocumentCreator.dto.Table;
 import cars24.DocumentCreator.enums.DocFormat;
+import cars24.DocumentCreator.exceptions.CustomException;
 import cars24.DocumentCreator.model.Template;
 import cars24.DocumentCreator.repository.TemplateRepository;
 import cars24.DocumentCreator.service.validator.UserValidation;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -33,7 +35,7 @@ public class TemplateService implements RequestProcessor {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public Object process(String request) {
+    public Object process(String request) throws Exception {
         try {
             Map userRequest = objectMapper.readValue(request,Map.class);
             String requestType = (String) userRequest.get(Constants.INPUT_FIELDS.REQUEST_TYPE);
@@ -47,12 +49,11 @@ public class TemplateService implements RequestProcessor {
                     && Objects.nonNull(templateId) && templateId.isEmpty()){
                 return getTemplatePayload(templateId);
             }
+            throw new CustomException(HttpStatus.REQUESTED_RANGE_NOT_SATISFIABLE,"Invalid Request Type : ".concat(requestType));
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Unable to parse the request.");
         }
-        return "- Invalid Request! Check Request Input. -";
+
     }
 
     @Override
@@ -97,9 +98,9 @@ public class TemplateService implements RequestProcessor {
         return templateRepository.save(template);
     }
 
-    public Object getTemplatePayload(String templateId) throws Exception {
+    public Object getTemplatePayload(String templateId) throws CustomException {
         Optional<Template> response = templateRepository.findById(templateId);
-        if (response.isEmpty()) throw new Exception("No Template found for Template Id : ".concat(templateId));
+        if (response.isEmpty()) throw new CustomException(HttpStatus.NOT_FOUND,"No Template found for Template Id : ".concat(templateId));
         return response.get().getExpectedJsonFormat();
     }
     public static String generateTemplateID() {

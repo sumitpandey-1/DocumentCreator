@@ -1,9 +1,11 @@
 package cars24.DocumentCreator.service;
 
 
+import cars24.DocumentCreator.exceptions.CustomException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import cars24.DocumentCreator.utility.Constants.*;
 
@@ -24,7 +26,7 @@ public class RequestResolverService {
         String requestType = (String) userRequest.get(INPUT_FIELDS.REQUEST_TYPE);
         RequestProcessor processor = getProcessor(requestType);
         if (Objects.isNull(processor)){
-            throw new Exception("Invalid Request Type!!");
+            throw new CustomException(HttpStatus.NOT_FOUND,"Invalid Request Type : ".concat(requestType));
         }
         return processor.process(request);
     }

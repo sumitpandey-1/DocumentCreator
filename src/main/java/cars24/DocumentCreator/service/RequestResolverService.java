@@ -21,14 +21,22 @@ public class RequestResolverService {
 
     private List<RequestProcessor> processors;
 
-    public Object process(String request) throws Exception {
-        Map userRequest = objectMapper.readValue(request,Map.class);
-        String requestType = (String) userRequest.get(INPUT_FIELDS.REQUEST_TYPE);
-        RequestProcessor processor = getProcessor(requestType);
-        if (Objects.isNull(processor)){
-            throw new CustomException(HttpStatus.NOT_FOUND,"Invalid Request Type : ".concat(requestType));
+    public Object process(String request){
+        try {
+            Map userRequest = objectMapper.readValue(request,Map.class);
+            String requestType = (String) userRequest.get(INPUT_FIELDS.REQUEST_TYPE);
+            RequestProcessor processor = getProcessor(requestType);
+            if (Objects.isNull(processor)){
+                throw new CustomException(HttpStatus.NOT_FOUND,"Invalid Request Type : ".concat(requestType));
+            }
+            return processor.process(request);
+        }catch (CustomException e){
+            throw e;
         }
-        return processor.process(request);
+        catch (Exception e){
+            throw new CustomException(HttpStatus.CONFLICT, "Unable to Parse Request.");
+        }
+
     }
 
     private RequestProcessor getProcessor(String requestType) {

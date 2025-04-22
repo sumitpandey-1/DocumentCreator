@@ -2,6 +2,7 @@ package cars24.DocumentCreator.service;
 
 
 import cars24.DocumentCreator.enums.DocFormat;
+import cars24.DocumentCreator.enums.DocType;
 import cars24.DocumentCreator.exceptions.CustomException;
 import cars24.DocumentCreator.filesystem.S3Service;
 import cars24.DocumentCreator.model.Template;
@@ -58,7 +59,7 @@ public class DocumentService implements RequestProcessor {
             jsonValidator.validateJsonDocument(objectMapper.writeValueAsString(template.getExpectedJsonFormat()),data);
             String processedHtml =
                     htmlParserService.replacePlaceholders(data,template);
-            String defaultDocType = "pdf";
+            String defaultDocType = DocType.PDF.getValue();
             if (userRequest.containsKey(INPUT_FIELDS.DOC_TYPE)){
                 defaultDocType = (String) userRequest.get(INPUT_FIELDS.DOC_TYPE);
             }

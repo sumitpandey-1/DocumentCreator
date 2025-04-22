@@ -68,7 +68,7 @@ public class JsonValidator {
                   .append(ve.getMessage())
                   .append(System.lineSeparator());
             }
-            throw  new CustomException(HttpStatus.PARTIAL_CONTENT,sb.toString());
+            throw new CustomException(HttpStatus.PARTIAL_CONTENT,sb.toString());
         }
     }
 }

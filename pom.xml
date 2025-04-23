@@ -9,9 +9,9 @@
 		<relativePath/>
 	</parent>
 	<groupId>cars24</groupId>
-	<artifactId>DocumentCreator</artifactId>
+	<artifactId>papermill</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>DocumentCreator</name>
+	<name>papermill</name>
 	<description>To Centralise the document creation of organisation.</description>
 	<url/>
 	<licenses>

@@ -1,6 +1,7 @@
 package cars24.DocumentCreator.model;
 
 import cars24.DocumentCreator.dto.Table;
+import cars24.DocumentCreator.enums.DocFormat;
 import lombok.Data;
 import lombok.Generated;
 import org.springframework.data.annotation.Id;
@@ -23,7 +24,7 @@ public class Template {
     private String tenantId;
     private LocalDateTime createdOn;
     private LocalDateTime updatedOn;
-    private String docFormat;
+    private DocFormat docFormat;
     private List<Table> tables;
 
 }

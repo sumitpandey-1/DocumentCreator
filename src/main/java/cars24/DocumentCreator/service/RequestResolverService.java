@@ -1,42 +1,48 @@
 package cars24.DocumentCreator.service;
 
-import cars24.DocumentCreator.config.ISpringFactory;
+
+import cars24.DocumentCreator.exceptions.CustomException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import cars24.DocumentCreator.utility.Constants.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 @Service
+@AllArgsConstructor
 public class RequestResolverService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Autowired
-    ISpringFactory iSpringFactory;
+    private List<RequestProcessor> processors;
 
-    public Object process(String request) throws Exception {
-        Map userRequest = objectMapper.readValue(request,Map.class);
-        String requestType = (String) userRequest.get(INPUT_FIELDS.REQUEST_TYPE);
-        GenericService processor = getProcessor(requestType);
-        if (Objects.isNull(processor)){
-            throw new Exception("Invalid Request Type!!");
+    public Object process(String request){
+        try {
+            Map userRequest = objectMapper.readValue(request,Map.class);
+            String requestType = (String) userRequest.get(INPUT_FIELDS.REQUEST_TYPE);
+            RequestProcessor processor = getProcessor(requestType);
+            if (Objects.isNull(processor)){
+                throw new CustomException(HttpStatus.NOT_FOUND,"Invalid Request Type : ".concat(requestType));
+            }
+            return processor.process(request);
+        }catch (CustomException e){
+            throw e;
         }
-        return processor.process(request);
+        catch (Exception e){
+            throw new CustomException(HttpStatus.CONFLICT, "Unable to Parse Request.");
+        }
+
     }
 
-    private GenericService getProcessor(String requestType) {
-        switch (requestType){
-            case REQUEST_TYPE.CREATE_DOCUMENT:
-                return iSpringFactory.getBean(DocumentService.class);
-            case REQUEST_TYPE.GET_TEMPLATE_PAYLOAD:
-            case REQUEST_TYPE.UPDATE_TEMPLATE:
-            case REQUEST_TYPE.CREATE_TEMPLATE:
-                return iSpringFactory.getBean(TemplateService.class);
-            default:
-                return null;
+    private RequestProcessor getProcessor(String requestType) {
+        for(RequestProcessor processor : processors){
+            if (processor.supportsDocumentRequestType(requestType)) return processor;
         }
+        return null;
     }
 }

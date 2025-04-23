@@ -1,17 +1,13 @@
 package cars24.DocumentCreator.service.validator;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import cars24.DocumentCreator.exceptions.CustomException;
 import org.everit.json.schema.Schema;
+import org.everit.json.schema.ValidationException;
 import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Iterator;
-import java.util.Map;
 
 /*
 EXPECTED JSON EXAMPLE
@@ -56,18 +52,23 @@ EXPECTED JSON EXAMPLE
 @Service
 public class JsonValidator {
 
-    public boolean validateJsonDocument(String definition, String payload){
+    public void validateJsonDocument(String definition, String payload){
         try {
             JSONObject rawSchema = new JSONObject(new JSONTokener(definition));
             Schema schema = SchemaLoader.load(rawSchema);
             JSONObject json = new JSONObject(new JSONTokener(payload));
             schema.validate(json);
-            return true;
 
-        } catch (Exception e) {
-            return false;
+        } catch (ValidationException e){
+            StringBuilder sb = new StringBuilder("Validation failed: ")
+                    .append(e.getMessage()).append(System.lineSeparator())
+                    .append("Invalid payload path: ").append(System.lineSeparator());
+            for (ValidationException ve : e.getCausingExceptions()) {
+                sb.append(" - ")
+                  .append(ve.getMessage())
+                  .append(System.lineSeparator());
+            }
+            throw new CustomException(HttpStatus.PARTIAL_CONTENT,sb.toString());
         }
     }
-
-
 }

@@ -1,18 +1,19 @@
 package cars24.DocumentCreator.service;
 
+import cars24.DocumentCreator.enums.DocFormat;
+import cars24.DocumentCreator.utility.Constants;
 import com.microsoft.playwright.*;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class HTMLToPDFConverter implements HTMLConverter {
 
     @Override
-    public void process(String htmlContent , String format ){
+    public byte[] process(String htmlContent , DocFormat format ){
         try (Playwright playwright = Playwright.create()) {
             Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions()
                     .setHeadless(true)
@@ -23,15 +24,20 @@ public class HTMLToPDFConverter implements HTMLConverter {
                             "--disable-extensions",
                             "--disable-dev-shm-usage"
                     )));
-            String defaultFormat = "A4";
             BrowserContext context = browser.newContext();
             Page page = context.newPage();
             page.setContent(htmlContent);
-            page.pdf(new Page.PdfOptions()
-                    .setPath(Paths.get("/Users/a38648/Desktop/CARS24/DocumentCreator/src/main/resources/templates/output.pdf"))
-                    .setFormat((Objects.isNull(format) || format.isEmpty()) ? defaultFormat : format)
+            byte[] pdfBytes = page.pdf(new Page.PdfOptions()
+                    .setFormat(format.getValue())
                     .setPrintBackground(true));
             browser.close();
+
+            return pdfBytes;
         }
+    }
+
+    @Override
+    public boolean canConvert(String requestType) {
+        return Constants.DOCUMENT_TYPE.PDF.contains(requestType.toLowerCase());
     }
 }

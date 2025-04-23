@@ -3,7 +3,7 @@ package cars24.DocumentCreator.service;
 import cars24.DocumentCreator.dto.Column;
 import cars24.DocumentCreator.dto.Table;
 import cars24.DocumentCreator.model.Template;
-import cars24.DocumentCreator.utility.Funtions;
+import cars24.DocumentCreator.utility.DataUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jsoup.Jsoup;
@@ -20,19 +20,43 @@ public class HTMLParserService {
 
     private ObjectMapper objectMapper = new ObjectMapper();
     public String replacePlaceholders(String data, Template template) throws JsonProcessingException {
-        Map<String,Object> map= objectMapper.readValue(data,Map.class);
-        String html = template.getHtmlTemplate();
-        if (Objects.nonNull(template.getTables()) && !template.getTables().isEmpty()){
-            html = insertTemplateTables(map,template);
-        }
-        for (String key : map.keySet()) {
-            if (Funtions.isFlatDataType(map.get(key))) {
-                StringBuilder placeHolder = new StringBuilder();
-                placeHolder.append("((").append(key).append("))");
-                html = html.replace(placeHolder.toString(), (String) map.get(key));
+        Map<String,Object> templateFillData = objectMapper.readValue(data,Map.class);
+        String html = insertTemplateTables(templateFillData,template);
+
+        //Replace Placeholders
+        StringBuilder result = new StringBuilder();
+        int i = 0;
+        int length = html.length();
+        while (i < length) {
+            if (i + 1 < length && html.charAt(i) == '(' && html.charAt(i + 1) == '(') {
+                i += 2; // Skip "(("
+                StringBuilder keyBuilder = new StringBuilder();
+
+                while (i + 1 < length && !(html.charAt(i) == ')' && html.charAt(i + 1) == ')')) {
+                    keyBuilder.append(html.charAt(i));
+                    i++;
+                }
+
+                if (i + 1 < length && html.charAt(i) == ')' && html.charAt(i + 1) == ')') {
+                    String key = keyBuilder.toString();
+                    Object value = templateFillData.get(key);
+                    if (value != null && DataUtils.isFlatDataType(value)) {
+                        result.append(value.toString());
+                    } else {
+                        result.append("((").append(key).append("))"); // Keep original if missing or invalid
+                    }
+                    i += 2; // Skip "))"
+                } else {
+                    // Unclosed ((... append it literally
+                    result.append("((").append(keyBuilder);
+                    break;
+                }
+            } else {
+                result.append(html.charAt(i));
+                i++;
             }
         }
-        return html;
+        return result.toString();
     }
 
     public String insertTemplateTables(Map<String,Object> data, Template template) {
@@ -40,7 +64,7 @@ public class HTMLParserService {
         if (Objects.isNull(tables) || tables.isEmpty()) return template.getHtmlTemplate();
         Document doc = Jsoup.parse(template.getHtmlTemplate());
         for(Table table : tables){
-            List<Map<String,Object>> tableEntries = (List<Map<String, Object>>) data.get(table.getTableSource());
+            List<Map<String,Object>> tableEntries = (List<Map<String, Object>>) data.get(table.getTableId());
             if (Objects.isNull(tableEntries) || tableEntries.isEmpty()) continue;
             Element tableBody = doc.select("table#" + table.getTableId() + " tbody").first();
             if (tableBody != null) {
@@ -66,7 +90,6 @@ public class HTMLParserService {
             String tableId = tableElement.id();
             Table tableMapping = new Table();
             tableMapping.setTableId(tableId);
-            tableMapping.setTableSource(tableId);
             List<Column> columns = new ArrayList<>();
             Elements headerCells = tableElement.select("thead th");
             if (headerCells.isEmpty()) {

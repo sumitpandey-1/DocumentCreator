@@ -19,14 +19,14 @@ public class AWSConfig {
     @Value("${aws.region}")
     private String region;
 
-//    @Value("${aws.accessKey}")
-//    private String accessKeyId;
-//
-//    @Value("${aws.secretKey}")
-//    private String secretAccessKey;
-//
-//    @Value("${aws.s3.endpoint}")
-//    private String endpoint;
+    @Value("${aws.access.key.id}")
+    private String accessKeyId;
+
+    @Value("${aws.secret.access.key}")
+    private String secretAccessKey;
+
+    @Value("${aws.s3.endpoint}")
+    private String endpoint;
 
     @Bean
     public S3Client s3Client() {

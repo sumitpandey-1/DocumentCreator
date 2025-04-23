@@ -22,14 +22,41 @@ public class HTMLParserService {
     public String replacePlaceholders(String data, Template template) throws JsonProcessingException {
         Map<String,Object> templateFillData = objectMapper.readValue(data,Map.class);
         String html = insertTemplateTables(templateFillData,template);
-        for (String key : templateFillData.keySet()) {
-            if (DataUtils.isFlatDataType(templateFillData.get(key))) {
-                StringBuilder placeHolder = new StringBuilder();
-                placeHolder.append("((").append(key).append("))");
-                html = html.replace(placeHolder.toString(), (String) templateFillData.get(key));
+
+        //Replace Placeholders
+        StringBuilder result = new StringBuilder();
+        int i = 0;
+        int length = html.length();
+        while (i < length) {
+            if (i + 1 < length && html.charAt(i) == '(' && html.charAt(i + 1) == '(') {
+                i += 2; // Skip "(("
+                StringBuilder keyBuilder = new StringBuilder();
+
+                while (i + 1 < length && !(html.charAt(i) == ')' && html.charAt(i + 1) == ')')) {
+                    keyBuilder.append(html.charAt(i));
+                    i++;
+                }
+
+                if (i + 1 < length && html.charAt(i) == ')' && html.charAt(i + 1) == ')') {
+                    String key = keyBuilder.toString();
+                    Object value = templateFillData.get(key);
+                    if (value != null && DataUtils.isFlatDataType(value)) {
+                        result.append(value.toString());
+                    } else {
+                        result.append("((").append(key).append("))"); // Keep original if missing or invalid
+                    }
+                    i += 2; // Skip "))"
+                } else {
+                    // Unclosed ((... append it literally
+                    result.append("((").append(keyBuilder);
+                    break;
+                }
+            } else {
+                result.append(html.charAt(i));
+                i++;
             }
         }
-        return html;
+        return result.toString();
     }
 
     public String insertTemplateTables(Map<String,Object> data, Template template) {

@@ -73,6 +73,10 @@ public class TemplateService implements RequestProcessor {
                 template = new Template();
                 template.setTemplateId(templateId);
             }
+        }else {
+            String templateId = generateTemplateID();
+            template = new Template();
+            template.setTemplateId(templateId);
         }
         if (request.containsKey(Constants.TEMPLATE_FIELDS.TEMPLATE_NAME)) {
             template.setTemplateName((String) request.get(Constants.TEMPLATE_FIELDS.TEMPLATE_NAME));
